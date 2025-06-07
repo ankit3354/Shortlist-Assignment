@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(cors()); 
 
 
-app.get('/check', (req, res) => {
+app.get('/', (req, res) => {
     res.send("Healthy Server!")
 })
 
