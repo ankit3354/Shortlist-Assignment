@@ -17,6 +17,7 @@ const CorsOptions = {
 
 app.use(express.json())
 app.use(cors(CorsOptions));
+app.use(cors({ origin: 'https://shortlist-assignment-frontend.vercel.app/' }));
 
 
 app.get('/', (req, res) => {
