@@ -1,28 +1,37 @@
-import { useEffect, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Navbar from './Navbar';
-import { FaRegImage, FaArrowDownWideShort, FaArrowRightLong } from 'react-icons/fa6';
-import { BiDetail, BiHide, BiSolidBookmarkHeart } from 'react-icons/bi';
-import { IoLocationSharp } from 'react-icons/io5';
-import { BsClipboard2Heart, BsClipboardHeart } from 'react-icons/bs';
-import { CgDanger } from 'react-icons/cg';
+import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Navbar from "./Navbar";
+import {
+  FaRegImage,
+  FaArrowDownWideShort,
+  FaArrowRightLong,
+} from "react-icons/fa6";
+import { BiDetail, BiHide, BiSolidBookmarkHeart } from "react-icons/bi";
+import { IoLocationSharp } from "react-icons/io5";
+import { BsClipboard2Heart, BsClipboardHeart } from "react-icons/bs";
+import { CgDanger } from "react-icons/cg";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ;
 
+console.log("J", API_BASE_URL);
 const fetchUsers = async () => {
-  const response = await fetch('http://localhost:3000/api', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch(`${API_BASE_URL}/api`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
   });
   if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
   return response.json();
 };
 
 const toggleStatus = async (userId) => {
-  const response = await fetch('http://localhost:3000/api/toggleStatus', {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch(`${API_BASE_URL}/api/toggleStatus`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ _id: userId }),
   });
-  if (!response.ok) throw new Error((await response.json()).message || 'Failed to toggle status');
+  if (!response.ok)
+    throw new Error(
+      (await response.json()).message || "Failed to toggle status"
+    );
   return response.json();
 };
 
@@ -31,8 +40,12 @@ function Home() {
   const [showShortlisted, setShowShortlisted] = useState(false);
 
   // Fetch users with React Query
-  const { data: users = [], isLoading, error } = useQuery({
-    queryKey: ['users'],
+  const {
+    data: users = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
@@ -41,11 +54,11 @@ function Home() {
     mutationFn: toggleStatus,
     onMutate: async (userId) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries(['users']);
+      await queryClient.cancelQueries(["users"]);
       // Snapshot the previous value
-      const previousUsers = queryClient.getQueryData(['users']);
+      const previousUsers = queryClient.getQueryData(["users"]);
       // Optimistically update the user
-      queryClient.setQueryData(['users'], (old) =>
+      queryClient.setQueryData(["users"], (old) =>
         old.map((user) =>
           user._id === userId
             ? { ...user, shortlistStatus: !user.shortlistStatus }
@@ -57,11 +70,11 @@ function Home() {
     },
     onError: (err, userId, context) => {
       // Rollback on error
-      queryClient.setQueryData(['users'], context.previousUsers);
+      queryClient.setQueryData(["users"], context.previousUsers);
     },
     onSettled: () => {
       // Refetch to ensure data consistency
-      queryClient.invalidateQueries(['users']);
+      queryClient.invalidateQueries(["users"]);
     },
   });
 
@@ -70,18 +83,18 @@ function Home() {
     ? users.filter((user) => user.shortlistStatus)
     : users;
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center w-full h-screen font-bold text-black">
-        Loading...
-      </div>
-    );
-  if (error)
-    return (
-      <div className="flex justify-center items-center w-full h-screen font-bold text-black">
-        {error.message || '404 Something went wrong!'}
-      </div>
-    );
+  // if (isLoading)
+  //   return (
+  //     <div className="flex justify-center items-center w-full h-screen font-bold text-black">
+  //       Loading...
+  //     </div>
+  //   );
+  // if (error)
+  //   return (
+  //     <div className="flex justify-center items-center w-full h-screen font-bold text-black">
+  //       {error.message || "404 Something went wrong!"}
+  //     </div>
+  //   );
 
   return (
     <div>
@@ -91,11 +104,15 @@ function Home() {
         <div className="flex my-8 gap-4 px-2 justify-between md:justify-center items-center">
           <div className="flex flex-col gap-1 items-center justify-center">
             <BiDetail className="text-3xl md:text-5xl" />
-            <span className="text-[10px] font-semibold md:text-base">Contact</span>
+            <span className="text-[10px] font-semibold md:text-base">
+              Contact
+            </span>
           </div>
           <div className="flex flex-col gap-1 items-center justify-center">
             <FaRegImage className="text-3xl md:text-5xl" />
-            <span className="text-[10px] font-semibold md:text-base">Gallery</span>
+            <span className="text-[10px] font-semibold md:text-base">
+              Gallery
+            </span>
           </div>
           <div className="flex flex-col gap-1 items-center justify-center">
             <IoLocationSharp className="text-3xl md:text-5xl" />
@@ -109,7 +126,7 @@ function Home() {
           >
             <BsClipboard2Heart className="text-3xl md:text-5xl" />
             <span className="text-[10px] font-semibold md:text-base">
-              {showShortlisted ? 'All Users' : 'Shortlisted'}
+              {showShortlisted ? "All Users" : "Shortlisted"}
             </span>
           </button>
           <div className="flex flex-col gap-1 items-center justify-center">
@@ -119,11 +136,25 @@ function Home() {
         </div>
       </div>
 
+      {isLoading && (
+        <div className="flex justify-center items-center w-full font-bold text-black">
+          Loading...
+        </div>
+      )}
+
+      {error && (
+        <div className="flex justify-center items-center w-full font-bold text-black">
+          {error.message || "404 Something went wrong!"}
+        </div>
+      )}
+
       {/* Users Profile lists */}
       <div className="max-w-3xl mx-auto">
         {displayedUsers.length === 0 ? (
           <div className="text-center text-gray-500">
-            {showShortlisted ? 'No shortlisted users found.' : 'No user profiles found.'}
+            {showShortlisted
+              ? "No shortlisted users found."
+              : "No user profiles found."}
           </div>
         ) : (
           displayedUsers.map((user) => (
@@ -135,7 +166,7 @@ function Home() {
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-gray-800">
-                    {user.RoleName || 'N/A'}
+                    {user.RoleName || "N/A"}
                   </h2>
                 </div>
                 <div className="flex items-center my-2">
@@ -143,9 +174,9 @@ function Home() {
                     <svg
                       key={i}
                       className={`w-5 h-5 ${
-                        i < parseFloat(user.rate?.split('/')[0] || 0)
-                          ? 'black'
-                          : 'text-gray-300'
+                        i < parseFloat(user.rate?.split("/")[0] || 0)
+                          ? "black"
+                          : "text-gray-300"
                       }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
@@ -155,30 +186,34 @@ function Home() {
                   ))}
                 </div>
                 <p className="text-sm font-semibold w-[80%] text-gray-600 my-3">
-                  {user.description || 'N/A'}
+                  {user.description || "N/A"}
                 </p>
                 <div className="flex items-center space-x-6 mt-3">
                   <div>
                     <p className="text-3xl font-semibold text-gray-800">
-                      {user.project || '0'}
+                      {user.project || "0"}
                     </p>
-                    <p className="text-xs font-semibold text-gray-500">Projects</p>
+                    <p className="text-xs font-semibold text-gray-500">
+                      Projects
+                    </p>
                   </div>
                   <div>
                     <p className="text-3xl font-semibold text-gray-800">
-                      {user.year ? user.year - 2017 : '0'}
+                      {user.year ? user.year - 2017 : "0"}
                     </p>
                     <p className="text-xs font-semibold text-gray-500">Years</p>
                   </div>
                   <div>
                     <p className="text-3xl font-semibold text-gray-800">
-                      {user.rate ? `$${user.rate.split('/')[0]}` : '$$'}
+                      {user.rate ? `$${user.rate.split("/")[0]}` : "$$"}
                     </p>
                     <p className="text-xs font-semibold text-gray-500">Price</p>
                   </div>
                 </div>
                 <div className="mt-2 text-2xl font-semibold flex flex-col">
-                  <span className="flex items-center">+91 - {user.contactNumbers || 'N/A'}</span>
+                  <span className="flex items-center">
+                    +91 - {user.contactNumbers || "N/A"}
+                  </span>
                 </div>
               </div>
 
@@ -203,7 +238,7 @@ function Home() {
                     <BsClipboardHeart className="text-2xl" />
                   )}
                   <span className="text-xs font-semibold">
-                    {mutation.isLoading ? 'Toggling...' : 'Shortlist'}
+                    {mutation.isLoading ? "Toggling..." : "Shortlist"}
                   </span>
                 </button>
                 <button className="flex flex-col justify-center items-center text-gray-600 hover:text-gray-800">

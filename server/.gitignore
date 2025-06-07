@@ -77,3 +77,6 @@ Thumbs.db
 # Ignore output directories
 /dist
 /build
+
+.env
+.env.local
