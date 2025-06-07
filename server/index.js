@@ -9,15 +9,14 @@ const PORT = process.env.PORT || 3000
 
 connectDB()
 
-const CorsOptions = {
-    origin: process.env.FRONTEND_URL,
-    methods: ['GET', 'CREATE', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}
+const corsOptions = {
+    origin: process.env.FRONTEND_URL || 'https://shortlist-assignment-frontend.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
 app.use(express.json())
-app.use(cors(CorsOptions));
-app.use(cors({ origin: 'https://shortlist-assignment-frontend.vercel.app/' }));
+app.use(cors(corsOptions));
 
 
 app.get('/', (req, res) => {
